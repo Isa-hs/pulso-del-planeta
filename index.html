@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Pulso del planeta: consulta clima, calidad del aire, biodiversidad, CO₂ y coberturas terrestres en un solo visor ambiental.">
+<meta name="theme-color" content="#14123A">
+<title>Pulso del planeta | Visor ambiental</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&family=Unbounded:wght@600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-fase="dia">
+<div class="envoltura">
+  <header>
+    <div class="barra">
+      <div class="marca">Pulso del planeta</div>
+      <form id="formulario">
+        <input id="busqueda" aria-label="Buscar ciudad o lugar" placeholder="Busca una ciudad, un pueblo, un parque…">
+        <button type="submit">Buscar</button>
+        <button type="button" class="gps" id="gps">📍 Mi ubicación</button>
+      </form>
+    </div>
+    <div class="ciudades" id="ciudades" aria-label="Ciudades de ejemplo"></div>
+
+    <div class="hero">
+      <div>
+        <h1 id="ciudad">Cargando…</h1>
+        <p class="pais" id="pais"></p>
+        <div class="temp"><span id="temp">--</span><span id="cielo-txt"></span></div>
+        <p class="frase" id="frase"></p>
+      </div>
+      <svg id="arco" viewBox="0 0 600 230" role="img" aria-label="Recorrido del sol o la luna en este lugar">
+        <line x1="10" y1="180" x2="590" y2="180" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+        <path d="M40 180 Q300 -60 560 180" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round"/>
+        <g id="astro" transform="translate(40 180)">
+          <g id="sol-ico">
+            <g stroke="#14123A" stroke-width="3" stroke-linecap="round">
+              <line x1="32" y1="0" x2="43" y2="0"/><line x1="22.6" y1="22.6" x2="30.4" y2="30.4"/>
+              <line x1="0" y1="32" x2="0" y2="43"/><line x1="-22.6" y1="22.6" x2="-30.4" y2="30.4"/>
+              <line x1="-32" y1="0" x2="-43" y2="0"/><line x1="-22.6" y1="-22.6" x2="-30.4" y2="-30.4"/>
+              <line x1="0" y1="-32" x2="0" y2="-43"/><line x1="22.6" y1="-22.6" x2="30.4" y2="-30.4"/>
+            </g>
+            <circle r="24" fill="#FFC629" stroke="#14123A" stroke-width="3"/>
+          </g>
+          <g id="luna-ico" style="display:none">
+            <circle r="24" fill="#F1ECFF" stroke="#14123A" stroke-width="3"/>
+            <circle cx="-8" cy="-6" r="4.5" fill="#CFC5F5"/><circle cx="9" cy="8" r="6" fill="#CFC5F5"/>
+          </g>
+        </g>
+        <text id="hora-sale" x="40" y="214" text-anchor="middle">–</text>
+        <text id="hora-pone" x="560" y="214" text-anchor="middle">–</text>
+      </svg>
+    </div>
+  </header>
+
+  <main class="rejilla">
+    <section class="tile grande s7" style="--c:var(--sol)"><h2>Sol y radiación</h2><div id="sol">Cargando…</div></section>
+    <section class="tile s5" style="--c:var(--menta)"><h2>Viento</h2><div id="viento">Cargando…</div></section>
+
+    <section class="tile s5" style="--c:var(--azul)"><h2>Humedad</h2><div id="humedad">Cargando…</div></section>
+    <section class="tile chica s7" id="tile-aire" style="--c:#7DF0A2"><h2>Calidad del aire</h2><div id="aire">Cargando…</div></section>
+
+    <section class="tile s12"><h2>Próximos 5 días</h2><div id="pronostico">Cargando…</div></section>
+
+    <section class="tile grande s7" style="--c:var(--lila)"><h2>Vida a tu alrededor</h2><div id="bio">Cargando…</div></section>
+    <section class="tile s5" style="--c:var(--coral)"><h2>CO₂ en la atmósfera</h2><div id="co2">Cargando…</div></section>
+
+    <section class="tile s12">
+      <h2>Coberturas de la tierra</h2>
+      <div class="anios" id="anios" role="group" aria-label="Año del mapa"></div>
+      <p id="estado-esri" class="nota">Conectando con la capa de Esri…</p>
+      <p id="punto">Haz clic en el mapa para ver qué hay en ese punto.</p>
+      <div id="mapa"></div>
+      <div id="leyenda" class="leyenda"></div>
+      <p class="nota">Capa de Esri Sentinel-2 a 10 m. Acércate al mapa (zoom 8 o más) y espera unos segundos: Esri dibuja cada cuadro al momento. En el selector de capas del mapa puedes cambiar el fondo o sumar ESA WorldCover y NASA MODIS.</p>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <p>Datos abiertos de Open-Meteo, GBIF y NOAA. Coberturas terrestres de Esri / Impact Observatory / Microsoft, ESA WorldCover y NASA GIBS. Cartografía base de Esri y colaboradores de OpenStreetMap.</p>
+    <p><a href="README.md">Fuentes, metodología, limitaciones y créditos</a>.</p>
+  </footer>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/app.js" defer></script>
+</body>
+</html>
